@@ -12,4 +12,5 @@ describe('EventService', () => {
     const service: EventService = TestBed.get(EventService);
     expect(service).toBeTruthy();
   });
+
 });

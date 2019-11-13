@@ -14,18 +14,25 @@ export class EventService {
   constructor(private http: HttpClient) { }
 
   getList(filter: EventFilter, paging: Paging): Observable<any>{
-    var data = filter == null ? [] : JSON.stringify(filter);
-    return this.http.post(environment.apiUrl + '/event', data);
+    return this.http.post(environment.apiUrl + '/event', filter);
+  }
+
+  getData(id: number): Observable<Event>{
+    return this.http.get<Event>(`${environment.apiUrl}/event/${id}`);
   }
 
   saveData(event: Event): Observable<Event>{
-    var data = event == null ? [] : JSON.stringify(event);
-    if(event.eventId == null) {
-      return this.http.put<Event>(`${environment.apiUrl}/event`, data);
+    if(event.event_id == null) {
+      event.create_user_id = 1;
+      return this.http.put<Event>(`${environment.apiUrl}/event`, event);
     }else{
-      return this.http.put<Event>(`${environment.apiUrl}/event/${event.eventId}`, data);
+      event.modify_user_id = 1;
+      return this.http.put<Event>(`${environment.apiUrl}/event/${event.event_id}`, event);
     }
-    
+  }
+
+  deleteData(id: number): Observable<any>{
+    return this.http.delete(`${environment.apiUrl}/event/${id}`);
   }
   
 }

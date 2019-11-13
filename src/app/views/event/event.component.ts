@@ -1,43 +1,49 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { EventService } from '../../models/services/event.service';
 import { Paging } from '../../models/data/paging';
-import { Event } from '../../models/data/event';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
+import { EventModel } from '../../models/viewmodels/event-model';
+import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
+import { Event } from '../../models/data/event';
+import { DIHelper } from '../../helper';
 
 @Component({
   templateUrl: './event.component.html',
 })
 export class EventComponent implements OnInit {
 
-  @ViewChild('editModal', {static: false}) public editModal: ModalDirective;
+  @ViewChild('editModal', { static: false }) public editModal: ModalDirective;
+  @ViewChild('successSwal') private successSwal: SwalComponent;
 
-  model: Event;
-  datas: Array<Event>;
-  totalItems: number = 10;
-  itemsPerPage: number = 20;
+  model: EventModel;
+  totalItems: number;
+  itemsPerPage: number = 10;
   currentPage: number = 1;
+
+  deleteName;
 
   constructor(
     private eventService: EventService
   ) {
-    this.model = new Event();
-    this.datas = new Array<Event>();
+    this.model = new EventModel();
   }
 
   ngOnInit() {
     this.getList();
+    this.model.fillLookup();
   }
 
   getList(pageNo: number = 0) {
     var paging = new Paging();
     paging.pageNo = pageNo;
     paging.pageSize = this.itemsPerPage;
-    this.eventService.getList(null, paging).subscribe(
+    this.eventService.getList(this.model.toEventFilter(), paging).subscribe(
       (res) => {
-        this.totalItems = res['meta'].total_entries;
-        this.currentPage = res['meta'].page_no + 1;
-        this.datas = res['data'];
+        console.log(res);
+        this.totalItems = res.meta.total_entries;
+        this.currentPage = res.meta.page_no + 1;
+        this.model.events = res.data;
       },
       (error) => {
         console.error(error);
@@ -45,16 +51,46 @@ export class EventComponent implements OnInit {
     );
   }
 
-  saveData(eventForm) {
-    console.log(eventForm);
+  edit(eventId: number) {
+    this.eventService.getData(eventId).subscribe(
+      (event) => {
+        this.model.event = event;
+        this.editModal.show();
+      }
+    );
+  }
+
+  saveData() {
     console.log(this.model)
-    this.eventService.saveData(this.model).subscribe(
+    this.eventService.saveData(this.model.event).subscribe(
       (res) => {
         console.log(res);
+        this.getList();
+        this.editModal.hide();
+        this.model.event = new Event();
+        this.successSwal.title = "Saved !";
+        this.successSwal.text = `Add new event successfully.`;
+        this.successSwal.fire();
       },
       (error) => {
         console.error(error);
       });
+  }
+
+  deleteData(id: number, name: string) {
+    this.eventService.deleteData(id).subscribe(
+      (res) => {
+        if (res['status']) {
+          console.log(res['status']);
+          this.getList();
+          this.successSwal.title = "Success !";
+          this.successSwal.text = `${name} has been deleted.`;
+          this.successSwal.fire();
+        } else {
+          console.log('error');
+        }
+      }
+    );
   }
 
   pageChanged(event: any): void {

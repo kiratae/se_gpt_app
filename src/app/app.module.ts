@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, Injector } from '@angular/core';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
@@ -38,6 +38,9 @@ import { AppRoutingModule } from './app.routing';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { ChartsModule } from 'ng2-charts';
+import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+
+import { Helper } from './helper';
 
 @NgModule({
   imports: [
@@ -52,7 +55,9 @@ import { ChartsModule } from 'ng2-charts';
     BsDropdownModule.forRoot(),
     TabsModule.forRoot(),
     ChartsModule,
-    HttpClientModule
+    HttpClientModule,
+    SweetAlert2Module.forRoot(),
+    Helper
   ],
   declarations: [
     AppComponent,
@@ -62,10 +67,13 @@ import { ChartsModule } from 'ng2-charts';
     LoginComponent,
     RegisterComponent
   ],
-  providers: [{
-    provide: LocationStrategy,
-    useClass: HashLocationStrategy
-  }],
-  bootstrap: [ AppComponent ]
+  providers: [
+    {
+      provide: LocationStrategy,
+      useClass: HashLocationStrategy,
+    }
+  ],
+  bootstrap: [AppComponent]
 })
-export class AppModule { }
+
+export class AppModule {}

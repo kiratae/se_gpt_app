@@ -6,6 +6,7 @@ import { EventRoutingModule } from './event-routing.module';
 import { CommonModule } from '@angular/common';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 
 @NgModule({
   imports: [
@@ -13,7 +14,8 @@ import { ModalModule } from 'ngx-bootstrap/modal';
     FormsModule,
     PaginationModule.forRoot(),
     ModalModule.forRoot(),
-    EventRoutingModule
+    EventRoutingModule,
+    SweetAlert2Module
   ],
   declarations: [ EventComponent ]
 })
