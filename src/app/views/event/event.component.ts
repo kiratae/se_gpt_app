@@ -34,9 +34,9 @@ export class EventComponent implements OnInit {
     this.model.fillLookup();
   }
 
-  getList(pageNo: number = 0) {
+  getList() {
     var paging = new Paging();
-    paging.pageNo = pageNo;
+    paging.pageNo = this.currentPage - 1;
     paging.pageSize = this.itemsPerPage;
     this.eventService.getList(this.model.toEventFilter(), paging).subscribe(
       (res) => {
@@ -94,6 +94,8 @@ export class EventComponent implements OnInit {
   }
 
   pageChanged(event: any): void {
+    this.currentPage = event.page;
+    this.getList();
     console.log('Page changed to: ' + event.page);
     console.log('Number items per page: ' + event.itemsPerPage);
   }
